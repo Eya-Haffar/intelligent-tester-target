@@ -1,30 +1,26 @@
 import pytest
-import re
 from playwright.sync_api import Page, expect
 
-# Base URL of your Vite React development server
 BASE_URL = 'http://localhost:5173'
 
-def test_homepage_loads_and_has_correct_title(page: Page):
-    """Test that the application loads and displays the default Vite + React title."""
+def test_todo_app_title(page: Page):
+    """Test that the application loads and has the correct title."""
     page.goto(BASE_URL)
-    
-    # Expect the title to contain "Vite + React"
-    expect(page).to_have_title(re.compile(r"Vite \+ React"))
+    expect(page).to_have_title("Todo App")
 
-def test_counter_increments_on_click(page: Page):
-    """Test the interactivity of the default counter button."""
+def test_add_todo_item(page: Page):
+    """Test adding a new todo item."""
     page.goto(BASE_URL)
     
-    # Locate the button that says "count is 0"
-    counter_button = page.locator("button", has_text="count is 0")
+    # Locate the input field and the add button
+    input_field = page.get_by_placeholder("Enter todo...")
+    add_button = page.locator("button", has_text="Add")
     
-    # Ensure it is visible on the page
-    expect(counter_button).to_be_visible()
+    # Type a new todo and click add
+    input_field.fill("Buy groceries")
+    add_button.click()
     
-    # Click the button
-    counter_button.click()
-    
-    # Verify that the text updates to "count is 1"
-    updated_button = page.locator("button", has_text="count is 1")
-    expect(updated_button).to_be_visible()
+    # Verify the todo was added to the list
+    todo_item = page.locator("li", has_text="Buy groceries")
+    expect(todo_item).to_be_visible()
+
