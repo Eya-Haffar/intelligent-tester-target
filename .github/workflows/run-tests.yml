@@ -19,6 +19,8 @@ jobs:
           cache: 'npm'
       - name: Install dependencies
         run: npm ci
+      - name: Install Playwright package
+        run: npm install -D @playwright/test playwright
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
       - name: Run generated tests
