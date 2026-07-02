@@ -19,7 +19,7 @@ def test_homepage_elements_visible(page: Page):
     expect(page.get_by_role("link", name="Phones & PDAs", exact=True)).to_be_visible()
     
     # Search bar and Cart
-    expect(page.locator("input[name='search']")).to_be_visible()
+    expect(page.locator("input[name='search']").first).to_be_visible()
     expect(page.locator("#cart")).to_be_visible()
     
     # Footer links
@@ -28,9 +28,9 @@ def test_homepage_elements_visible(page: Page):
 
 def test_search_valid_product(page: Page):
     """Test searching for a valid product (iPhone)."""
-    search_input = page.locator("input[name='search']")
+    search_input = page.locator("input[name='search']").first
     search_input.fill("iPhone")
-    page.locator("button.btn-light.btn-lg").click() # Search button icon
+    page.locator("button.type-text").first.click() if page.locator("button.type-text").first.is_visible() else page.locator("button:has-text('Search')").first.click() # Search button icon
     
     # Check if results appear
     expect(page.locator("h1")).to_contain_text("Search - iPhone")
@@ -49,7 +49,7 @@ def test_add_featured_product_to_cart(page: Page):
 
 def test_change_currency(page: Page):
     """Test switching the currency to Euro."""
-    page.locator(".nav-item .dropdown-toggle").filter(has_text="Currency").click()
+    page.get_by_role("button", name="Currency").click() if page.get_by_role("button", name="Currency").is_visible() else None
     page.get_by_role("button", name="€ Euro").click()
     
     # Verify currency symbol changes on a product price
@@ -60,16 +60,16 @@ def test_change_currency(page: Page):
 
 def test_search_no_results(page: Page):
     """Negative Scenario: Search for a product that does not exist."""
-    search_input = page.locator("input[name='search']")
+    search_input = page.locator("input[name='search']").first
     search_input.fill("NonExistentMagicWand123")
-    page.locator("button.btn-light.btn-lg").click()
+    page.locator("button.type-text").first.click() if page.locator("button.type-text").first.is_visible() else page.locator("button:has-text('Search')").first.click()
     
     # Verify no results message
     expect(page.locator("#content p")).to_contain_text("There is no product that matches the search criteria.")
 
 def test_empty_search_submission(page: Page):
     """Edge Case: Clicking search without entering any text."""
-    page.locator("button.btn-light.btn-lg").click()
+    page.locator("button.type-text").first.click() if page.locator("button.type-text").first.is_visible() else page.locator("button:has-text('Search')").first.click()
     # Should stay on search page or show neutral search state
     expect(page.locator("h1")).to_contain_text("Search")
 
@@ -78,9 +78,9 @@ def test_empty_search_submission(page: Page):
 def test_security_sql_injection_attempt(page: Page):
     """Security: Attempt a basic SQL injection payload in search."""
     sqli_payload = "' OR '1'='1"
-    search_input = page.locator("input[name='search']")
+    search_input = page.locator("input[name='search']").first
     search_input.fill(sqli_payload)
-    page.locator("button.btn-light.btn-lg").click()
+    page.locator("button.type-text").first.click() if page.locator("button.type-text").first.is_visible() else page.locator("button:has-text('Search')").first.click()
     
     # Verify the application doesn't crash and treats it as a string
     expect(page.locator("h1")).to_contain_text("Search")
@@ -89,9 +89,9 @@ def test_security_sql_injection_attempt(page: Page):
 def test_security_xss_attempt(page: Page):
     """Security: Attempt a basic Cross-Site Scripting (XSS) payload in search."""
     xss_payload = "<script>alert('XSS')</script>"
-    search_input = page.locator("input[name='search']")
+    search_input = page.locator("input[name='search']").first
     search_input.fill(xss_payload)
-    page.locator("button.btn-light.btn-lg").click()
+    page.locator("button.type-text").first.click() if page.locator("button.type-text").first.is_visible() else page.locator("button:has-text('Search')").first.click()
     
     # Verify payload is sanitized (rendered as text, not executed)
     # Playwright's page.on('dialog') would catch an alert if it fired
