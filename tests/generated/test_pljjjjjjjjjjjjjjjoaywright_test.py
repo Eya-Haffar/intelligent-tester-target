@@ -2,7 +2,7 @@ import pytest
 from playwright.sync_api import Page, expect
 
 # Test Constants
-BASE_URL = "https://demo.opencart.com"
+BASE_URL = "https://ecommerce-playground.lambdatest.io"
 
 @pytest.fixture(autouse=True)
 def setup(page: Page):
