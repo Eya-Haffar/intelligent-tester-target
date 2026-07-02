@@ -30,9 +30,10 @@ def test_search_valid_product(page: Page):
 
 def test_add_featured_product_to_cart(page: Page):
     """Test adding a featured product to the cart from the homepage."""
-    # Use product_id 43 (MacBook) which is usually in stock
-    page.goto(BASE_URL + "/index.php?route=product/product&product_id=43")
-    page.locator("button:has-text('Add to Cart'), button[title='Add to Cart']").first.click()
+    # Navigate to a generic category to click on an available product
+    page.goto(BASE_URL + "/index.php?route=product/search&search=apple")
+    # Force click because of floating/sticky headers on lambdatest
+    page.locator("button:has-text('Add to Cart'), button[title='Add to Cart']").first.click(force=True)
     
     success_alert = page.locator(".alert-success, .toast-body").first
     expect(success_alert).to_be_visible()
