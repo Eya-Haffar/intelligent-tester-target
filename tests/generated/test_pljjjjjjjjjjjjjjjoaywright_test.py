@@ -13,9 +13,9 @@ def setup(page: Page):
 
 def test_homepage_elements_visible(page: Page):
     """Verify that key homepage elements are present and visible."""
-    expect(page.get_by_role("link", name="Desktops")).first.to_be_visible()
-    expect(page.get_by_role("link", name="Tablets")).first.to_be_visible()
-    expect(page.get_by_role("link", name="Phones & PDAs")).first.to_be_visible()
+    expect(page.get_by_role("link", name="Desktops").first).to_be_visible()
+    expect(page.get_by_role("link", name="Tablets").first).to_be_visible()
+    expect(page.get_by_role("link", name="Phones & PDAs").first).to_be_visible()
     
     expect(page.locator("input[name='search']").first).to_be_visible()
     
@@ -30,7 +30,8 @@ def test_search_valid_product(page: Page):
 
 def test_add_featured_product_to_cart(page: Page):
     """Test adding a featured product to the cart from the homepage."""
-    page.goto(BASE_URL + "/index.php?route=product/product&product_id=28")
+    # Use product_id 43 (MacBook) which is usually in stock
+    page.goto(BASE_URL + "/index.php?route=product/product&product_id=43")
     page.locator("button:has-text('Add to Cart'), button[title='Add to Cart']").first.click()
     
     success_alert = page.locator(".alert-success, .toast-body").first
@@ -48,7 +49,7 @@ def test_search_no_results(page: Page):
     search_input.fill("NonExistentMagicWand123")
     search_input.press("Enter")
     
-    expect(page.get_by_text("There is no product that matches the search criteria.")).first.to_be_visible()
+    expect(page.get_by_text("There is no product that matches the search criteria.").first).to_be_visible()
 
 def test_empty_search_submission(page: Page):
     """Edge Case: Clicking search without entering any text."""
